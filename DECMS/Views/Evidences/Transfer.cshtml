@@ -1,0 +1,51 @@
+@model DECMS.Models.Evidence
+@{
+    ViewData["Title"] = "Transfer Evidence";
+}
+
+<div class="mb-4">
+    <a asp-action="Details" asp-route-id="@Model.Id" class="text-decoration-none"><i class="bi bi-arrow-left"></i> Back to Evidence</a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0 border-primary">
+            <div class="card-header bg-white py-3 border-bottom border-primary">
+                <h4 class="mb-0 text-primary"><i class="bi bi-arrow-left-right"></i> Transfer Chain of Custody</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle-fill"></i> <strong>Warning:</strong> You are about to transfer custody of Evidence <strong>@Model.EvidenceNumber</strong>. This action will be permanently recorded in the chain of custody and audit logs.
+                </div>
+
+                <form asp-action="Transfer" method="post">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Transfer To</label>
+                        <select name="ToUserId" class="form-select" asp-items="ViewBag.ToUserId" required>
+                            <option value="">-- Select Recipient --</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Reason for Transfer</label>
+                        <input type="text" name="Reason" class="form-control" required placeholder="e.g. For forensic analysis" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Current Location</label>
+                        <input type="text" name="Location" class="form-control" required placeholder="e.g. Lab 3" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Additional Notes (Optional)</label>
+                        <textarea name="Notes" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100"><i class="bi bi-check-circle"></i> Confirm Transfer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

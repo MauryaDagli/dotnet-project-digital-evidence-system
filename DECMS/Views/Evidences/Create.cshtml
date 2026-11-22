@@ -1,0 +1,107 @@
+@model DECMS.Models.Evidence
+@{
+    ViewData["Title"] = "Register Evidence";
+}
+
+<div class="mb-4">
+    @if (!string.IsNullOrEmpty(ViewBag.CaseId as string))
+    {
+        <a href="/Cases/Details/@ViewBag.CaseId" class="text-decoration-none"><i class="bi bi-arrow-left"></i> Back to Case</a>
+    }
+    else
+    {
+        <a href="/Evidences" class="text-decoration-none"><i class="bi bi-arrow-left"></i> Back to Evidence List</a>
+    }
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white py-3">
+        <h4 class="mb-0"><i class="bi bi-shield-lock text-primary"></i> Register Secure Evidence</h4>
+    </div>
+    <div class="card-body">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label class="form-label fw-bold">Associated Investigation Case <span class="text-danger">*</span></label>
+                    <select name="CaseId" class="form-select" required>
+                        <option value="">-- Select an Investigation Case --</option>
+                        @if (ViewBag.Cases != null)
+                        {
+                            foreach (var item in (SelectList)ViewBag.Cases)
+                            {
+                                if (item.Value == (string)ViewBag.CaseId)
+                                {
+                                    <option value="@item.Value" selected>@item.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="EvidenceNumber" class="form-label fw-bold">Evidence ID</label>
+                    <input asp-for="EvidenceNumber" class="form-control" placeholder="e.g. EVD-2026-0003" required />
+                    <span asp-validation-for="EvidenceNumber" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Name" class="form-label fw-bold">Evidence Name</label>
+                    <input asp-for="Name" class="form-control" placeholder="e.g. Hard Drive Image / Memory Dump / Access Logs" required />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label fw-bold">Description</label>
+                <textarea asp-for="Description" class="form-control" rows="3" placeholder="Detailed notes about the evidence source, custody context, and collection method..."></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Type" class="form-label fw-bold">Evidence Type</label>
+                    <select asp-for="Type" class="form-select">
+                        <option value="Log File">Log File</option>
+                        <option value="Document">Document</option>
+                        <option value="Image">Image</option>
+                        <option value="Video">Video</option>
+                        <option value="Audio">Audio</option>
+                        <option value="Email">Email</option>
+                        <option value="Disk Image">Disk Image</option>
+                        <option value="Database">Database</option>
+                        <option value="Mobile Backup">Mobile Backup</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <span asp-validation-for="Type" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="CollectionDate" class="form-label fw-bold">Collection Date</label>
+                    <input asp-for="CollectionDate" class="form-control" type="datetime-local" />
+                    <span asp-validation-for="CollectionDate" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="CollectionLocation" class="form-label fw-bold">Collection Location</label>
+                    <input asp-for="CollectionLocation" class="form-control" placeholder="e.g. Server Room Rack 2" />
+                    <span asp-validation-for="CollectionLocation" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-4 p-3 border rounded bg-light">
+                <label for="evidenceFile" class="form-label fw-bold text-danger"><i class="bi bi-file-earmark-lock"></i> Secure File Upload</label>
+                <input type="file" class="form-control" id="evidenceFile" name="evidenceFile" required />
+                <div class="form-text mt-2"><i class="bi bi-info-circle"></i> File will be securely hashed (SHA-256) immediately upon upload to ensure immutability.</div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-save"></i> Register & Secure Evidence</button>
+            </div>
+        </form>
+    </div>
+</div>

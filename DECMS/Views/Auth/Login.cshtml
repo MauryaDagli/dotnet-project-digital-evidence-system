@@ -1,0 +1,44 @@
+@{
+    ViewData["Title"] = "Log in";
+    Layout = "_Layout";
+}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h3 class="card-title text-center mb-4">
+                    <i class="bi bi-shield-lock text-primary" style="font-size: 2rem;"></i><br/>
+                    DECMS Login
+                </h3>
+                <form asp-controller="Auth" asp-action="Login" method="post" asp-route-returnurl="@ViewData["ReturnUrl"]">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-bold">Email address</label>
+                        <input type="email" class="form-control form-control-lg" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label fw-bold">Password</label>
+                        <input type="password" class="form-control form-control-lg" id="password" name="password" required>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe" value="true">
+                        <label class="form-check-label" for="rememberMe">Remember me</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">Login to Secure System</button>
+                </form>
+                <div class="mt-4">
+                    <div class="alert alert-info">
+                        <strong>Demo Accounts:</strong> (Password: Demo@123)<br/>
+                        <ul class="mb-0 mt-2 pl-3" style="font-size:0.9rem">
+                            <li>admin@decms.local</li>
+                            <li>officer@decms.local</li>
+                            <li>investigator@decms.local</li>
+                            <li>forensic@decms.local</li>
+                            <li>court@decms.local</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

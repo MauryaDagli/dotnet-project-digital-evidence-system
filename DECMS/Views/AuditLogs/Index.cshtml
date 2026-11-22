@@ -1,0 +1,48 @@
+@model IEnumerable<DECMS.Models.AuditLog>
+@{
+    ViewData["Title"] = "System Audit Logs";
+    var users = ViewBag.Users as Dictionary<string, string> ?? new Dictionary<string, string>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-journal-text text-primary"></i> System Audit Logs</h2>
+    <div class="text-muted small"><i class="bi bi-info-circle"></i> Showing last 200 security events</div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-sm mb-0 align-middle" style="font-size: 0.9rem;">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Entity</th>
+                        <th>ID</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var log in Model) {
+                        var isSuccess = log.Success ? "text-success" : "text-danger";
+                        var icon = log.Success ? "bi-check-circle-fill" : "bi-x-circle-fill";
+                        <tr>
+                            <td class="text-nowrap">@log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                            <td>@(users.ContainsKey(log.UserId) ? users[log.UserId] : "System")</td>
+                            <td class="fw-bold">@log.Action</td>
+                            <td>@log.EntityType</td>
+                            <td>@log.EntityId</td>
+                            <td class="text-truncate" style="max-width: 300px;" title="@log.Description">@log.Description</td>
+                            <td class="text-center"><i class="bi @icon @isSuccess"></i></td>
+                        </tr>
+                    }
+                    @if(!Model.Any()) {
+                        <tr><td colspan="7" class="text-center py-4">No audit logs available.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,69 @@
+@model IEnumerable<DECMS.Models.Evidence>
+@{
+    ViewData["Title"] = "Evidence Management";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-box-seam text-primary"></i> Evidence Management</h2>
+    @if (User.IsInRole("Admin") || User.IsInRole("Police Officer") || User.IsInRole("Investigator") || User.IsInRole("ADMIN") || User.IsInRole("POLICE OFFICER") || User.IsInRole("INVESTIGATOR"))
+    {
+        <a href="/Evidences/Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Register Evidence</a>
+    }
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body py-3">
+        <form asp-action="Index" method="get" class="row g-3 align-items-center">
+            <div class="col-auto">
+                <label for="searchString" class="col-form-label"><i class="bi bi-search"></i> Search Evidence:</label>
+            </div>
+            <div class="col-md-5">
+                <input type="text" name="searchString" id="searchString" class="form-control" value="@ViewData["CurrentFilter"]" placeholder="Evidence ID, Name, or Case Number..." />
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Filter</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Evidence ID</th>
+                        <th>Name</th>
+                        <th>Case Number</th>
+                        <th>Type</th>
+                        <th>Current Custodian</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model) {
+                        <tr>
+                            <td class="fw-bold">@item.EvidenceNumber</td>
+                            <td>@item.Name</td>
+                            <td><a href="/Cases/Details/@item.CaseId">@item.Case?.CaseNumber</a></td>
+                            <td>@item.Type</td>
+                            <td>@(item.CurrentCustodian?.FullName ?? "Unknown")</td>
+                            <td><span class="badge bg-info text-dark">@item.Status</span></td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i> View</a>
+                            </td>
+                        </tr>
+                    }
+                    @if(!Model.Any()) {
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">No evidence registered yet.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,145 @@
+@model DECMS.Models.Evidence
+@{
+    ViewData["Title"] = "Evidence Details";
+}
+
+<div class="mb-4 d-flex justify-content-between align-items-center">
+    <a asp-action="Index" class="text-decoration-none"><i class="bi bi-arrow-left"></i> Back to Evidence List</a>
+    <div>
+        <form asp-action="VerifyIntegrity" asp-route-id="@Model.Id" method="post" class="d-inline">
+            <button type="submit" class="btn btn-warning"><i class="bi bi-shield-check"></i> Verify Integrity</button>
+        </form>
+        <a href="/Evidences/Download/@Model.Id" class="btn btn-success"><i class="bi bi-download"></i> Download</a>
+        <a href="/Reports/EvidenceReport/@Model.Id" class="btn btn-secondary" target="_blank"><i class="bi bi-file-earmark-pdf"></i> Report</a>
+        @if(Model.CurrentCustodianId == User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value || User.IsInRole("Admin"))
+        {
+            <a href="/Evidences/Transfer/@Model.Id" class="btn btn-primary"><i class="bi bi-arrow-left-right"></i> Transfer</a>
+        }
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Evidence Metadata</h5>
+            </div>
+            <div class="card-body">
+                <h3 class="fw-bold">@Model.EvidenceNumber</h3>
+                <p class="text-muted mb-4">@Model.Name</p>
+                
+                <table class="table table-sm">
+                    <tbody>
+                        <tr><th class="w-40">Case Number:</th><td><a href="/Cases/Details/@Model.CaseId">@Model.Case?.CaseNumber</a></td></tr>
+                        <tr><th>Type:</th><td>@Model.Type</td></tr>
+                        <tr><th>Status:</th><td><span class="badge bg-info text-dark">@Model.Status</span></td></tr>
+                        <tr><th>Collection Date:</th><td>@Model.CollectionDate.ToString("g")</td></tr>
+                        <tr><th>Collection Loc:</th><td>@Model.CollectionLocation</td></tr>
+                        <tr><th>Collected By:</th><td>@Model.CollectedBy?.FullName</td></tr>
+                        <tr><th>Custodian:</th><td class="fw-bold text-primary">@Model.CurrentCustodian?.FullName</td></tr>
+                    </tbody>
+                </table>
+                
+                <div class="mt-4">
+                    <h6>Description</h6>
+                    <p class="small bg-light p-2 rounded">@Model.Description</p>
+                </div>
+                            <div class="mt-4 text-center">
+                    <h6>Evidence Identity (QR)</h6>
+                    <img src="/Evidences/GenerateQRCode?evidenceNumber=@Model.EvidenceNumber" alt="QR Code" class="img-thumbnail" style="width: 150px; height: 150px;" />
+                </div>
+            </div>
+        </div>
+        <div class="card shadow-sm border-0 mb-4 border-primary">
+            <div class="card-header bg-light border-bottom border-primary">
+                <h5 class="mb-0 text-primary"><i class="bi bi-fingerprint"></i> Digital Integrity</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="fw-bold small text-muted">Original Filename</label>
+                    <div class="text-break">@Model.OriginalFileName</div>
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold small text-muted">File Size / Type</label>
+                    <div>@(Model.FileSize / 1024) KB / @Model.MimeType</div>
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold small text-muted">SHA-256 Hash <span class="badge bg-success">Immutable</span></label>
+                    <div class="text-break font-monospace bg-light p-2 border rounded" style="font-size: 0.85rem;">
+                        @Model.SHA256Hash
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-7">
+        <div class="card shadow-sm border-0 mb-4 border-warning">
+            <div class="card-header bg-light border-bottom border-warning d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 text-warning text-darken-2"><i class="bi bi-search"></i> Forensic Analysis</h5>
+                @if(User.IsInRole("Forensic Analyst") && !Model.ForensicAnalyses.Any(f => f.Status == "In Progress"))
+                {
+                    <a href="/ForensicAnalyses/Create?evidenceId=@Model.Id" class="btn btn-warning btn-sm">Start Analysis</a>
+                }
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    @foreach(var analysis in Model.ForensicAnalyses)
+                    {
+                        <div class="list-group-item p-3">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1 fw-bold">@analysis.AnalysisType</h6>
+                                <span class="badge @(analysis.Status == "Completed" ? "bg-success" : "bg-warning text-dark")">@analysis.Status</span>
+                            </div>
+                            <div class="small mt-2">
+                                <strong>Findings:</strong> @(string.IsNullOrEmpty(analysis.Findings) ? "Pending..." : analysis.Findings)
+                            </div>
+                            @if(analysis.Status == "In Progress" && User.IsInRole("Forensic Analyst") && analysis.AnalystId == User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier)?.Value)
+                            {
+                                <div class="mt-2 text-end">
+                                    <a href="/ForensicAnalyses/Complete/@analysis.Id" class="btn btn-sm btn-success">Complete Analysis</a>
+                                </div>
+                            }
+                        </div>
+                    }
+                    @if(!Model.ForensicAnalyses.Any()) {
+                        <div class="p-3 text-muted text-center small">No analysis records.</div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                <h5 class="mb-0"><i class="bi bi-clock-history text-primary"></i> Chain of Custody Timeline</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    @foreach(var record in Model.CustodyRecords.OrderByDescending(r => r.Timestamp))
+                    {
+                        <div class="list-group-item p-3">
+                            <div class="d-flex w-100 justify-content-between mb-1">
+                                <h6 class="mb-1 fw-bold text-primary">@record.Action</h6>
+                                <small class="text-muted"><i class="bi bi-clock"></i> @record.Timestamp.ToString("g")</small>
+                            </div>
+                            <p class="mb-1 small">
+                                <strong>From:</strong> @(record.FromUser?.FullName ?? "System") <br/>
+                                <strong>To:</strong> @(record.ToUser?.FullName ?? "System")
+                            </p>
+                            <p class="mb-1 small text-muted"><strong>Reason:</strong> @record.Reason</p>
+                            @if(!string.IsNullOrEmpty(record.Notes)) {
+                                <div class="small bg-light p-1 mt-1 rounded text-muted fst-italic">@record.Notes</div>
+                            }
+                        </div>
+                    }
+                    @if(!Model.CustodyRecords.Any()) {
+                        <div class="p-4 text-center text-muted">No custody records found.</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

@@ -1,0 +1,43 @@
+@model DECMS.Models.ForensicAnalysis
+@{
+    ViewData["Title"] = "Start Forensic Analysis";
+}
+
+<div class="mb-4">
+    <a href="/Evidences/Details/@ViewBag.EvidenceId" class="text-decoration-none"><i class="bi bi-arrow-left"></i> Back to Evidence</a>
+</div>
+
+<div class="card shadow-sm border-0 border-warning mb-4">
+    <div class="card-header bg-white py-3 border-bottom border-warning">
+        <h4 class="mb-0 text-warning text-darken-2"><i class="bi bi-search"></i> Start Forensic Analysis for @ViewBag.EvidenceNumber</h4>
+    </div>
+    <div class="card-body">
+        <form asp-action="Create">
+            <input type="hidden" asp-for="EvidenceId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="AnalysisType" class="form-label fw-bold">Analysis Type</label>
+                <select asp-for="AnalysisType" class="form-select">
+                    <option value="Standard Forensic Review">Standard Forensic Review</option>
+                    <option value="Deep Disk Inspection">Deep Disk Inspection</option>
+                    <option value="Malware Analysis">Malware Analysis</option>
+                    <option value="Data Recovery">Data Recovery</option>
+                    <option value="Network Log Analysis">Network Log Analysis</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Methodology" class="form-label fw-bold">Methodology (Optional initially)</label>
+                <textarea asp-for="Methodology" class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ToolsUsed" class="form-label fw-bold">Tools Used (e.g., Autopsy, EnCase, Wireshark)</label>
+                <input asp-for="ToolsUsed" class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-warning"><i class="bi bi-play-circle"></i> Start Analysis</button>
+        </form>
+    </div>
+</div>

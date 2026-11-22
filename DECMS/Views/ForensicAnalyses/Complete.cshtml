@@ -1,0 +1,28 @@
+@model DECMS.Models.ForensicAnalysis
+@{
+    ViewData["Title"] = "Complete Forensic Analysis";
+}
+
+<div class="card shadow-sm border-0 border-success mb-4">
+    <div class="card-header bg-white py-3 border-bottom border-success">
+        <h4 class="mb-0 text-success"><i class="bi bi-check2-circle"></i> Complete Forensic Analysis</h4>
+    </div>
+    <div class="card-body">
+        <form asp-action="Complete">
+            <input type="hidden" name="id" value="@Model.Id" />
+            
+            <div class="mb-3">
+                <label class="form-label fw-bold">Findings</label>
+                <textarea name="findings" class="form-control" rows="5" required>@Model.Findings</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Additional Notes</label>
+                <textarea name="notes" class="form-control" rows="3">@Model.Notes</textarea>
+            </div>
+
+            <button type="submit" class="btn btn-success btn-lg"><i class="bi bi-save"></i> Submit Findings & Complete</button>
+            <a href="/Evidences/Details/@Model.EvidenceId" class="btn btn-secondary btn-lg">Cancel</a>
+        </form>
+    </div>
+</div>

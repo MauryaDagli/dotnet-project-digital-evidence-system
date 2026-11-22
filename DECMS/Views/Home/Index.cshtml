@@ -1,0 +1,118 @@
+@model DECMS.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2><i class="bi bi-speedometer2 text-primary"></i> System Dashboard</h2>
+        <div class="text-muted">Welcome to Digital Evidence Chain Management System</div>
+    </div>
+    @if (User.IsInRole("Admin") || User.IsInRole("Police Officer") || User.IsInRole("Investigator") || User.IsInRole("ADMIN") || User.IsInRole("POLICE OFFICER") || User.IsInRole("INVESTIGATOR"))
+    {
+        <div class="d-flex gap-2">
+            <a href="/Cases/Create" class="btn btn-outline-primary"><i class="bi bi-folder-plus"></i> New Case</a>
+            <a href="/Evidences/Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Register Evidence</a>
+        </div>
+    }
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white h-100 shadow-sm border-0">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-2 text-white-50">Total Cases</h6>
+                        <h2 class="mb-0 fw-bold">@Model.TotalCases</h2>
+                    </div>
+                    <i class="bi bi-folder2-open display-4 opacity-50"></i>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0 text-white-50 small">
+                <i class="bi bi-arrow-right-short"></i> Active: @Model.ActiveCases | Closed: @Model.ClosedCases
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white h-100 shadow-sm border-0">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-2 text-white-50">Total Evidence</h6>
+                        <h2 class="mb-0 fw-bold">@Model.TotalEvidence</h2>
+                    </div>
+                    <i class="bi bi-box-seam display-4 opacity-50"></i>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0 text-white-50 small">
+                <i class="bi bi-shield-check"></i> Monitored under chain of custody
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark h-100 shadow-sm border-0">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-2 text-dark-50">Pending Analysis</h6>
+                        <h2 class="mb-0 fw-bold">@Model.EvidencePendingAnalysis</h2>
+                    </div>
+                    <i class="bi bi-search display-4 opacity-50"></i>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0 text-dark-50 small">
+                <i class="bi bi-clock-history"></i> Awaiting forensic review
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="bi bi-arrow-left-right text-primary"></i> Recent Custody Transfers</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Evidence</th>
+                                <th>Action</th>
+                                <th>From</th>
+                                <th>To</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(!Model.RecentCustodyTransfers.Any())
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center py-4 text-muted">No recent transfers recorded.</td>
+                                </tr>
+                            }
+                            @foreach(var record in Model.RecentCustodyTransfers)
+                            {
+                                <tr>
+                                    <td>@record.Timestamp.ToString("g")</td>
+                                    <td>
+                                        <a href="/Evidences/Details/@record.EvidenceId" class="text-decoration-none">
+                                            @record.Evidence?.EvidenceNumber
+                                        </a>
+                                    </td>
+                                    <td><span class="badge bg-info text-dark">@record.Action</span></td>
+                                    <td>@record.FromUser?.FullName</td>
+                                    <td>@record.ToUser?.FullName</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

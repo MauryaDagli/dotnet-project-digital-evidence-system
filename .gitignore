@@ -1,0 +1,22 @@
+## Build and output directories
+bin/
+obj/
+out/
+dist/
+
+## Visual Studio & IDE files
+.vs/
+.idea/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+*.sln.docstates
+
+## Uploaded demo evidence files
+DECMS/SecureUploads/*
+!DECMS/SecureUploads/.gitkeep
+
+## OS generated files
+.DS_Store
+Thumbs.db
